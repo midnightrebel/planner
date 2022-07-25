@@ -1,11 +1,8 @@
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import RangeViewSet, CodeGenerateView,UserMeetingViewSet
+from .views import CodeGenerateView,UserMeetingViewSet,UserRetrieveView
 
-router = DefaultRouter()
-router.register('getrange', RangeViewSet)
 urlpatterns = [
-    path('', include(router.urls)),
     path('code/',CodeGenerateView.as_view()),
-    path('<str:code>/',UserMeetingViewSet.as_view())
+    path('',UserMeetingViewSet.as_view()),
+    path('<str:meeting_id__code>/',UserRetrieveView.as_view())
 ]
