@@ -3,7 +3,7 @@ from django.forms import SplitDateTimeWidget
 from rest_framework import serializers
 from .models import Meeting, UserDataRange
 from drf_extra_fields.fields import DateTimeRangeField
-
+from psycopg2._range import DateTimeTZRange
 
 class CustomDateTimeRangeField(DateTimeRangeField):
     bounds = "[]"

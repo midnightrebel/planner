@@ -12,13 +12,11 @@ from datetime import timedelta
 
 def next_ten_years():
     now = timezone.now()
-
-    # use a more accurate version of "10 years" if you need it
     return DateTimeTZRange(now, now + timedelta(days=3652),bounds='[]')
 
 
 class Meeting(models.Model):
-    code = models.CharField(unique=True, max_length=7, default='', db_index=True)
+    code = models.CharField(unique=True, max_length=7, default='', db_index=True,null=False)
     created_at = models.DateTimeField(auto_now_add=True, )
     ranges = ArrayField(base_field=DateTimeRangeField(), null=True, )
 
