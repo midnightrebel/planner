@@ -47,6 +47,7 @@ class UserMeetingViewSet(generics.ListCreateAPIView):
         serializer = CreateRangeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        print(serializer.data)
         with connection.cursor() as cursor:
             code = serializer.data["meeting_id"]
             try:

@@ -28,6 +28,5 @@ class UserDataRange(models.Model):
     meeting_id = models.ForeignKey(Meeting, on_delete=models.CASCADE)
     username = models.CharField(max_length=255, unique=True)
     user_ranges = DateTimeRangeField(default=next_ten_years)
-
     def __str__(self):
         return self.username
