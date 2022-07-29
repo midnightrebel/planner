@@ -44,7 +44,7 @@ class UserMeetingViewSet(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = DataFilter
     serializer_class = ListRangeSerializer
-    queryset = UserDataRange.objects.select_related('meeting_id')
+    queryset = UserDataRange.objects.select_related('meeting')
 
     # POST /<code>
     @transaction.atomic
@@ -56,7 +56,7 @@ class UserMeetingViewSet(generics.ListCreateAPIView):
             serializer.update(instance, serializer.validated_data)
         serializer.save()
         with connection.cursor() as cursor:
-            code = serializer.data["meeting_id"]
+            code = serializer.data["meeting"]
             try:
                 cursor.execute(
                     "update public.calendarapp_meeting set ranges = calculate_shedule(%s) where code = %s;",

@@ -18,26 +18,26 @@ class MeetingListSerializer(serializers.ModelSerializer):
 
 
 class CreateRangeSerializer(serializers.ModelSerializer):
-    meeting_id = serializers.SlugRelatedField(queryset=Meeting.objects.all(), slug_field='code', read_only=False)
+    meeting = serializers.SlugRelatedField(queryset=Meeting.objects.all(), slug_field='code', read_only=False)
     user_ranges = serializers.ListField(child=DateTimeRangeField())
 
     class Meta:
         model = UserDataRange
-        fields = ['meeting_id', 'username', 'user_ranges']
+        fields = ['meeting', 'username', 'user_ranges']
 
     def create(self, validated_data):
         answer, created = UserDataRange.objects.update_or_create(
             username=validated_data.get('username'),
             user_ranges=validated_data.get('user_ranges'),
-            meeting_id=validated_data.get('meeting_id'),
-            defaults={'meeting_id': validated_data.get('meeting_id')})
+            meeting=validated_data.get('meeting'),
+            defaults={'meeting': validated_data.get('meeting')})
         return answer
 
 
 class ListRangeSerializer(serializers.ModelSerializer):
-    meeting_id = serializers.SlugRelatedField(queryset=Meeting.objects.all(), slug_field='code', read_only=False)
+    meeting= serializers.SlugRelatedField(queryset=Meeting.objects.all(), slug_field='code', read_only=False)
 
     class Meta:
         model = UserDataRange
-        fields = ['meeting_id', 'username', 'user_ranges']
+        fields = ['meeting', 'username', 'user_ranges']
         widgets = {'user_ranges': RangeWidget(SplitDateTimeWidget())}
