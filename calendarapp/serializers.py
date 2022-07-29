@@ -1,6 +1,6 @@
 from django.contrib.postgres.forms import RangeWidget
 from django.forms import SplitDateTimeWidget
-from drf_extra_fields.fields import DateTimeRangeField
+from .fields import DateTimeRangeField
 from rest_framework import serializers
 
 from .models import Meeting, UserDataRange
@@ -10,7 +10,7 @@ from .models import Meeting, UserDataRange
 
 
 class MeetingListSerializer(serializers.ModelSerializer):
-    ranges = serializers.ListField(child=DateTimeRangeField())
+    ranges = serializers.ListField(child=serializers.ListField(child=DateTimeRangeField()))
 
     class Meta:
         model = Meeting
@@ -19,7 +19,7 @@ class MeetingListSerializer(serializers.ModelSerializer):
 
 class CreateRangeSerializer(serializers.ModelSerializer):
     meeting_id = serializers.SlugRelatedField(queryset=Meeting.objects.all(), slug_field='code', read_only=False)
-    user_ranges = DateTimeRangeField()
+    user_ranges = serializers.ListField(child=DateTimeRangeField())
 
     class Meta:
         model = UserDataRange
