@@ -35,26 +35,42 @@ class CodeGenerateView(APIView):
                     return Response({'code': code})
 
 
-class UserRetrieveView(generics.RetrieveUpdateAPIView):
+class UserRetrieveView(generics.RetrieveAPIView):
     serializer_class = MeetingListSerializer
     queryset = Meeting.objects.all()
     lookup_field = 'code'
 
-class UserMeetingViewSet(generics.ListCreateAPIView):
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = DataFilter
-    serializer_class = ListRangeSerializer
-    queryset = UserDataRange.objects.select_related('meeting')
+
+
+
+class UserMeetingViewSet(generics.RetrieveAPIView):
+    # filter_backends = (DjangoFilterBackend,)
+    # filterset_class = DataFilter
+    serializer_class = CreateRangeSerializer
+    lookup_url_kwarg = 'meeting__code'
+
+    def get_queryset(self):
+        uid = self.kwargs.get(self.lookup_url_kwarg)
+        comments = UserDataRange.objects.filter(meeting__code = uid)
+        if not comments.exists():
+            raise ValueError("Встречи не существует")
+        return comments
+
+    def retrieve(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
 
     # POST /<code>
     @transaction.atomic
     def post(self, request, *args, **kwargs):
-        serializer = CreateRangeSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         if UserDataRange.objects.filter(username=serializer.validated_data["username"]).exists():
             instance = UserDataRange.objects.get(username=serializer.validated_data["username"])
             serializer.update(instance, serializer.validated_data)
         serializer.save()
+
         with connection.cursor() as cursor:
             code = serializer.data["meeting"]
             try:
@@ -62,7 +78,6 @@ class UserMeetingViewSet(generics.ListCreateAPIView):
                     "update public.calendarapp_meeting set ranges = calculate_shedule(%s) where code = %s;",
                     [code, code]
                 )
-                print("Query")
             except Exception as e:
                 error = json.loads(e)
                 return Response({"error":error},status.HTTP_400_BAD_REQUEST)

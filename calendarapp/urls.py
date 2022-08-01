@@ -18,6 +18,5 @@ urlpatterns = [
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('code/', CodeGenerateView.as_view()),
-    path('', UserMeetingViewSet.as_view()),
-    path('<str:code>/', UserRetrieveView.as_view()),
+    path('<str:meeting__code>/', UserMeetingViewSet.as_view())
 ]
