@@ -51,9 +51,9 @@ class UserMeetingViewSet(generics.RetrieveAPIView):
 
     def get_queryset(self):
         uid = self.kwargs.get(self.lookup_url_kwarg)
-        comments = UserDataRange.objects.filter(meeting__code = uid)
+        comments = UserDataRange.objects.select_related('meeting').filter(meeting__code = uid)
         if not comments.exists():
-            raise ValueError("Встречи не существует")
+            pass
         return comments
 
     def retrieve(self, request, *args, **kwargs):
@@ -66,6 +66,7 @@ class UserMeetingViewSet(generics.RetrieveAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
+        serializer.validated_data['meeting'] = Meeting.objects.get(code=kwargs.get('meeting__code'))
         if UserDataRange.objects.filter(username=serializer.validated_data["username"]).exists():
             instance = UserDataRange.objects.get(username=serializer.validated_data["username"])
             serializer.update(instance, serializer.validated_data)

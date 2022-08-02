@@ -15,7 +15,7 @@ class MeetingListSerializer(serializers.ModelSerializer):
 
 
 class CreateRangeSerializer(serializers.ModelSerializer):
-    meeting = serializers.SlugRelatedField(queryset=Meeting.objects.all(),slug_field='code', read_only=False)
+    meeting = serializers.SlugRelatedField(slug_field='code', read_only=True)
     user_ranges = serializers.ListField(child=DateTimeRangeField())
     class Meta:
         model = UserDataRange
