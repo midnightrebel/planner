@@ -266,7 +266,7 @@ class RangeField(DictField):
             upper = value.upper
             bounds = value._bounds
 
-        return [self.child.to_representation(lower) if lower is not None else None, self.child.to_representation(upper) if upper is not None else None]
+        return [self.child.to_representation(lower) if lower is not None else ValidationError, self.child.to_representation(upper) if upper is not None else ValidationError]
 
     def get_initial(self):
         initial = super().get_initial()
