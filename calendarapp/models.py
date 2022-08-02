@@ -15,7 +15,7 @@ def next_ten_years():
 
 
 class Meeting(models.Model):
-    code = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    code = models.CharField(max_length=36,default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, )
     ranges = ArrayField(base_field=DateTimeRangeField(), null=True)
 

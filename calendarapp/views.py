@@ -75,7 +75,7 @@ class UserMeetingViewSet(generics.RetrieveAPIView):
         serializer.save()
 
         with connection.cursor() as cursor:
-            code = kwargs.get('meeting__code')
+            code = str(serializer.validated_data['meeting'])
             try:
                 cursor.execute(
                     "update public.calendarapp_meeting set ranges = calculate_shedule(%s) where code = %s;",
