@@ -53,7 +53,7 @@ class UserMeetingViewSet(generics.RetrieveAPIView):
         uid = self.kwargs.get(self.lookup_url_kwarg)
         comments = UserDataRange.objects.select_related('meeting').filter(meeting__code = uid)
         if not comments.exists():
-            pass
+            UserDataRange.objects.create(meeting=Meeting.objects.get(code=uid))
         return comments
 
     def retrieve(self, request, *args, **kwargs):
@@ -70,6 +70,7 @@ class UserMeetingViewSet(generics.RetrieveAPIView):
         if UserDataRange.objects.filter(username=serializer.validated_data["username"]).exists():
             instance = UserDataRange.objects.get(username=serializer.validated_data["username"])
             serializer.update(instance, serializer.validated_data)
+        UserDataRange.objects.filter(username='').delete()
         serializer.save()
 
         with connection.cursor() as cursor:
