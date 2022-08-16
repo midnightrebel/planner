@@ -24,7 +24,7 @@ from drf_extra_fields import compat
 
 try:
     from django.contrib.postgres import fields as postgres_fields
-    from psycopg2.extras import DateRange, DateTimeTZRange, NumericRange
+    from _range import DateRange, DateTimeTZRange, NumericRange
 except ImportError:
     postgres_fields = None
     DateRange = None
@@ -258,13 +258,15 @@ class RangeField(DictField):
 
             lower = value.get("lower")
             upper = value.get("upper")
+            bounds = value.get("bounds")
         else:
             if value.isempty:
                 return {'empty': True}
             lower = value.lower
             upper = value.upper
+            bounds = value._bounds
 
-        return [self.child.to_representation(lower) if lower is not None else None, self.child.to_representation(upper) if upper is not None else None]
+        return [self.child.to_representation(lower) if lower is not None else ValidationError, self.child.to_representation(upper) if upper is not None else ValidationError]
 
     def get_initial(self):
         initial = super().get_initial()
