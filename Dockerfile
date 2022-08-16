@@ -1,0 +1,9 @@
+FROM python:3
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+WORKDIR /app
+ADD . /app
+RUN pip install -r r.txt
+EXPOSE 8000
+EXPOSE 5432
+CMD python manage.py runserver
