@@ -1,7 +1,6 @@
 import json
 import random
 import string
-import uuid
 
 from django.db import connection, transaction
 from django_filters.rest_framework import DjangoFilterBackend
@@ -21,7 +20,7 @@ class CodeGenerateView(APIView):
     def get(self, request):
         with connection.cursor() as cursor:
             while True:
-                code = str(uuid.uuid4())
+                code = ''.join(random.choice(string.ascii_letters) for _ in range(7))
                 try:
                     cursor.execute(
                         "select not exists(select * from calendarapp_meeting where code = %s ) as available;",
@@ -75,14 +74,14 @@ class UserMeetingViewSet(generics.RetrieveAPIView):
         serializer.save()
 
         with connection.cursor() as cursor:
-            code = str(serializer.validated_data['meeting'])
+            code = serializer.data["meeting"]
             try:
                 cursor.execute(
                     "update public.calendarapp_meeting set ranges = calculate_shedule(%s) where code = %s;",
                     [code, code]
                 )
             except Exception as e:
-                error = str(e)
+                error = json.loads(e)
                 return Response({"error":error},status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.data)
